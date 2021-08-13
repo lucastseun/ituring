@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"os"
 )
@@ -38,7 +39,11 @@ func GenRsaKey(bits int) error {
 
 	publicKey := privateKey.PublicKey
 
-	publicKeyStream := x509.MarshalPKCS1PublicKey(&publicKey)
+	publicKeyStream, err := x509.MarshalPKIXPublicKey(&publicKey)
+
+	if err != nil {
+		return err
+	}
 
 	block = pem.Block{
 		Type:  "RSA PUBLIC KEY",
@@ -89,28 +94,30 @@ func RsaEncrypt(plainText []byte, path string) ([]byte, error) {
 }
 
 // RSA解密
-func RsaDecrypt(cipherText []byte, path string) ([]byte, error) {
+func RsaDecrypt(cipherText string, path string) (string, error) {
+	b, _ := base64.StdEncoding.DecodeString(cipherText)
+
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer file.Close()
 
 	fileInfo, err := os.Stat(path)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	fileBuf := make([]byte, fileInfo.Size())
 	file.Read(fileBuf)
 	block, _ := pem.Decode(fileBuf)
 	key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	plainText, err := rsa.DecryptPKCS1v15(rand.Reader, key, cipherText)
+	plainText, err := rsa.DecryptPKCS1v15(rand.Reader, key, []byte(b))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return plainText, nil
+	return string(plainText), nil
 }
