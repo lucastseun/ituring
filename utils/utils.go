@@ -41,7 +41,7 @@ func GenRsaKey(bits int) error {
 	publicKeyStream := x509.MarshalPKCS1PublicKey(&publicKey)
 
 	block = pem.Block{
-		Type:  "RSA Public Key",
+		Type:  "RSA PUBLIC KEY",
 		Bytes: publicKeyStream,
 	}
 
