@@ -18,5 +18,5 @@ func newApp() *iris.Application {
 
 func main() {
 	app := newApp()
-	app.Listen(":8080")
+	app.Listen(":3000")
 }
