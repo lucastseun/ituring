@@ -1,8 +1,10 @@
 package services
 
+import "ituring/dbsource"
+
 type BookService struct {
 }
 
-func NewBookService() *BookService {
+func NewBookService(db *dbsource.MYSQL) *BookService {
 	return &BookService{}
 }
