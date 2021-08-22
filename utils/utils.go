@@ -67,57 +67,71 @@ func GenRsaKey(bits int) error {
 }
 
 // RSA加密
-func RsaEncrypt(plainText []byte, path string) ([]byte, error) {
-	file, err := os.Open(path)
+func RsaEncrypt(plainText string) string {
+	file, err := os.Open("./utils/rsa_public_key.pem")
+
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	defer file.Close()
 
-	fileInfo, err := os.Stat(path)
+	fileInfo, err := os.Stat("./utils/rsa_public_key.pem")
+
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
+
 	fileBuf := make([]byte, fileInfo.Size())
 	file.Read(fileBuf)
 	block, _ := pem.Decode(fileBuf)
-	key, err := x509.ParsePKCS1PublicKey(block.Bytes)
+	publicKeyInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
+
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
-	cipherText, err := rsa.EncryptPKCS1v15(rand.Reader, key, plainText)
+	key := publicKeyInterface.(*rsa.PublicKey)
+	cipherText, err := rsa.EncryptPKCS1v15(rand.Reader, key, []byte(plainText))
+
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	return cipherText, nil
+
+	return base64.StdEncoding.EncodeToString(cipherText)
 }
 
 // RSA解密
-func RsaDecrypt(cipherText string, path string) (string, error) {
-	b, _ := base64.StdEncoding.DecodeString(cipherText)
-
-	file, err := os.Open(path)
+func RsaDecrypt(cipherText string) string {
+	b, err := base64.StdEncoding.DecodeString(cipherText)
 	if err != nil {
-		return "", err
+		panic(err)
+	}
+
+	file, err := os.Open("./utils/rsa_private_key.pem")
+
+	if err != nil {
+		panic(err)
 	}
 	defer file.Close()
 
-	fileInfo, err := os.Stat(path)
+	fileInfo, err := os.Stat("./utils/rsa_private_key.pem")
+
 	if err != nil {
-		return "", err
+		panic(err)
 	}
+
 	fileBuf := make([]byte, fileInfo.Size())
 	file.Read(fileBuf)
 	block, _ := pem.Decode(fileBuf)
 	key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 
 	plainText, err := rsa.DecryptPKCS1v15(rand.Reader, key, []byte(b))
 	if err != nil {
-		return "", err
+		panic(err)
 	}
-	return string(plainText), nil
+	return string(plainText)
 }
