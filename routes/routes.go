@@ -1,14 +1,14 @@
 package routes
 
 import (
-	"ituring/dbsource"
 	"ituring/handlers"
 	"ituring/services"
 
 	"github.com/kataras/iris/v12"
+	"gorm.io/gorm"
 )
 
-func InitRouter(app *iris.Application, db *dbsource.MYSQL) {
+func InitRouter(app *iris.Application, db *gorm.DB) {
 	var (
 		userService = services.NewUserService(db)
 		bookService = services.NewBookService(db)
@@ -19,6 +19,7 @@ func InitRouter(app *iris.Application, db *dbsource.MYSQL) {
 		handler := handlers.NewUserHandler(userService)
 		user.Post("/register", handler.Register)
 		user.Post("/login", handler.Login)
+		user.Post("/delete", handler.Delete)
 	}
 	// http://localhost/book
 	book := app.Party("book")

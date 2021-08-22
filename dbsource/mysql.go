@@ -14,19 +14,26 @@ const (
 	dbname   = "ituring"
 )
 
-type MYSQL struct {
-	db *gorm.DB
-}
-
-func ConnectMYSQL() (*MYSQL, error) {
+func ConnectMYSQL() (*gorm.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, ip, dbname)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
 	if err != nil {
 		return nil, err
 	}
-	return &MYSQL{db}, nil
-}
 
-func CreateDatabase() {
+	sqlDB, err := db.DB()
 
+	if err != nil {
+		return nil, err
+	}
+	// Ping
+	err = sqlDB.Ping()
+
+	if err != nil {
+		sqlDB.Close() // Close
+		return nil, err
+	}
+
+	return db, nil
 }
