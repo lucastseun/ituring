@@ -14,12 +14,12 @@ func NewUserService(db *gorm.DB) *UserService {
 	return &UserService{Service: db}
 }
 
-func (u *UserService) RegisterByNameAndPassword(name, password string) bool {
+func (u *UserService) RegisterByNameAndPassword(username, password string) bool {
 	user := models.User{
-		Name:     name,
+		Username: username,
 		Password: password,
 	}
-	_, found := u.GetUserByNameAndPassword(name, password)
+	_, found := u.GetUserByNameAndPassword(username, password)
 	if found {
 		return false
 	}
@@ -27,10 +27,10 @@ func (u *UserService) RegisterByNameAndPassword(name, password string) bool {
 	return res.Error == nil
 }
 
-func (u *UserService) GetUserByNameAndPassword(name, password string) (models.User, bool) {
+func (u *UserService) GetUserByNameAndPassword(username, password string) (models.User, bool) {
 	var user models.User
 
-	res := u.Service.Where(&models.User{Name: name, Password: password}).Find(&user)
+	res := u.Service.Where(&models.User{Username: username, Password: password}).Find(&user)
 	found := false
 
 	if res.RowsAffected > 0 {
@@ -51,10 +51,10 @@ func (u *UserService) GetUserByID(id uint64) (models.User, bool) {
 	return user, found
 }
 
-func (u *UserService) DeleteUserByNameAndPassword(name, password string) (models.User, bool) {
+func (u *UserService) DeleteUserByNameAndPassword(username, password string) (models.User, bool) {
 	var user models.User
 
-	res := u.Service.Unscoped().Where(&models.User{Name: name, Password: password}).Delete(&user)
+	res := u.Service.Unscoped().Where(&models.User{Username: username, Password: password}).Delete(&user)
 	if res.Error != nil {
 		return user, false
 	}

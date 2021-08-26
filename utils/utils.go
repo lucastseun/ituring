@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
+	"errors"
 	"os"
 )
 
@@ -134,4 +135,32 @@ func RsaDecrypt(cipherText string) string {
 		panic(err)
 	}
 	return string(plainText)
+}
+
+func NanoId(size int) (string, error) {
+	var (
+		defaultAlphabet = []rune("_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+		defaultSize     = 21
+	)
+
+	switch {
+	case size == 0:
+		size = defaultSize
+	case size != 0:
+		if size < 0 {
+			return "", errors.New("negative id length")
+		}
+	default:
+		return "", errors.New("unexpected parameter")
+	}
+	bytes := make([]byte, size)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", err
+	}
+	id := make([]rune, size)
+	for i := 0; i < size; i++ {
+		id[i] = defaultAlphabet[bytes[i]&63]
+	}
+	return string(id[:size]), nil
 }
