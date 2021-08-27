@@ -137,16 +137,17 @@ func RsaDecrypt(cipherText string) string {
 	return string(plainText)
 }
 
-func NanoId(size int) (string, error) {
+func NanoId(l ...int) (string, error) {
 	var (
 		defaultAlphabet = []rune("_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 		defaultSize     = 21
+		size            int
 	)
 
 	switch {
-	case size == 0:
+	case len(l) == 0:
 		size = defaultSize
-	case size != 0:
+	case len(l) == 1:
 		if size < 0 {
 			return "", errors.New("negative id length")
 		}
