@@ -2,6 +2,7 @@ package services
 
 import (
 	"ituring/models"
+	"ituring/utils"
 
 	"gorm.io/gorm"
 )
@@ -23,6 +24,11 @@ func (u *UserService) RegisterByNameAndPassword(username, password string) bool 
 	if found {
 		return false
 	}
+	id, err := utils.NanoId()
+	if err != nil {
+		panic(err)
+	}
+	user.AccountId = id
 	res := u.Service.Create(&user)
 	return res.Error == nil
 }
