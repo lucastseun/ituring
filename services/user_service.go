@@ -33,7 +33,7 @@ func (u *UserService) Register(password string, user models.User) error {
 	}
 	user.Password = string(hashed)
 
-	nanoid, err := utils.NanoId()
+	nanoid, err := utils.GenerateNanoId()
 	if err != nil {
 		return err
 	}

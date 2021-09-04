@@ -12,6 +12,11 @@ type User struct {
 	Password  string `gorm:"password" json:"password"`
 }
 
+type UserClaims struct {
+	Username  string
+	AccountId string
+}
+
 // 生成哈希值
 func GeneratePassword(password string) ([]byte, error) {
 	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

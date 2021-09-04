@@ -3,6 +3,7 @@ package handlers
 import (
 	"ituring/models"
 	"ituring/services"
+	"ituring/utils"
 
 	"github.com/kataras/iris/v12"
 )
@@ -65,12 +66,12 @@ func (h *UserHandler) Login(ctx iris.Context) {
 		})
 		return
 	}
-
+	token := utils.GenerateToken(models.UserClaims{Username: username, AccountId: user.AccountId})
 	ctx.JSON(iris.Map{
 		"msg": "登陆成功！",
 		"data": Response{
 			AccountId: user.AccountId,
-			Token:     "",
+			Token:     token,
 		},
 		"code": iris.StatusOK,
 	})

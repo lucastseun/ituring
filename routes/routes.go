@@ -3,6 +3,7 @@ package routes
 import (
 	"ituring/handlers"
 	"ituring/services"
+	"ituring/utils"
 
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
@@ -15,6 +16,7 @@ func InitRouter(app *iris.Application, db *gorm.DB) {
 	)
 	// http://localhost/user
 	user := app.Party("/user")
+	user.Use(utils.VerifyMiddleware())
 	{
 		handler := handlers.NewUserHandler(userService)
 		user.Post("/register", handler.Register)

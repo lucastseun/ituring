@@ -7,7 +7,12 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"errors"
+	"ituring/models"
 	"os"
+	"time"
+
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/middleware/jwt"
 )
 
 func GenRsaKey(bits int) error {
@@ -137,7 +142,8 @@ func RsaDecrypt(cipherText string) string {
 	return string(plainText)
 }
 
-func NanoId(l ...int) (string, error) {
+// 生成nanoid
+func GenerateNanoId(l ...int) (string, error) {
 	var (
 		defaultAlphabet = []rune("_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 		defaultSize     = 21
@@ -164,4 +170,31 @@ func NanoId(l ...int) (string, error) {
 		id[i] = defaultAlphabet[bytes[i]&63]
 	}
 	return string(id[:size]), nil
+}
+
+const (
+	accessTokenMaxAge  = 10 * time.Minute
+	refreshTokenMaxAge = time.Hour
+)
+
+var (
+	privateKey, publicKey = jwt.MustLoadRSA("./utils/rsa_private_key.pem", "./utils/rsa_public_key.pem")
+
+	signer   = jwt.NewSigner(jwt.RS256, privateKey, accessTokenMaxAge)
+	verifier = jwt.NewVerifier(jwt.RS256, publicKey)
+)
+
+// 生成token
+func GenerateToken(claims models.UserClaims) string {
+	token, err := signer.Sign(claims)
+	if err != nil {
+		return err.Error()
+	}
+	return string(token)
+}
+
+func VerifyMiddleware() iris.Handler {
+	return verifier.Verify(func() interface{} {
+		return new(models.UserClaims)
+	})
 }
