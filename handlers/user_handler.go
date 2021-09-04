@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"ituring/models"
 	"ituring/services"
 
@@ -37,7 +36,7 @@ func (h *UserHandler) Register(ctx iris.Context) {
 
 	if u != nil {
 		ctx.JSON(iris.Map{
-			"errMsg": fmt.Sprintf("%s", u),
+			"errMsg": u.Error(),
 			"code":   iris.StatusOK,
 		})
 		return
