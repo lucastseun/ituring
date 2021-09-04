@@ -66,7 +66,7 @@ func (h *UserHandler) Login(ctx iris.Context) {
 		})
 		return
 	}
-	fmt.Println(user.AccountId)
+
 	ctx.JSON(iris.Map{
 		"msg": "登陆成功！",
 		"data": Response{
