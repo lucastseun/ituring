@@ -11,21 +11,22 @@ import (
 
 func InitRouter(app *iris.Application, db *gorm.DB) {
 	var (
-		userService = services.NewUserService(db)
-		bookService = services.NewBookService(db)
+		userService      = services.NewUserService(db)
+		bookService      = services.NewBookService(db)
+		verifyMiddleware = utils.VerifyMiddleware()
 	)
 	// http://localhost/user
 	user := app.Party("/user")
-	user.Use(utils.VerifyMiddleware())
 	{
 		handler := handlers.NewUserHandler(userService)
 		user.Post("/register", handler.Register)
 		user.Post("/login", handler.Login)
-		user.Post("/delete", handler.Delete)
+		user.Post("/delete", verifyMiddleware, handler.Delete)
 	}
 	// http://localhost/book
 	book := app.Party("book")
 	{
+		book.Use(verifyMiddleware)
 		handler := handlers.NewBookHandler(bookService)
 		book.Post("/hot", handler.Hot)
 	}
