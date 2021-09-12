@@ -58,8 +58,8 @@ func (h *UserHandler) Login(ctx iris.Context) {
 		})
 		return
 	}
-	user, found := h.service.GetUserByNameAndPassword(username, password)
-	if !found {
+	user, exist := h.service.GetUserByNameAndPassword(username, password)
+	if !exist {
 		ctx.JSON(iris.Map{
 			"errMsg": "用户未注册！",
 			"code":   iris.StatusOK,

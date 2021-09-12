@@ -63,12 +63,8 @@ func (u *UserService) GetUserByID(id string) (bool, models.User) {
 	var user models.User
 
 	res := u.db.First(&user, "account_id = ?", id)
-	found := false
 
-	if res.RowsAffected > 0 {
-		found = true
-	}
-	return found, user
+	return res.RowsAffected > 0, user
 }
 
 func (u *UserService) DeleteByID(id string) bool {
