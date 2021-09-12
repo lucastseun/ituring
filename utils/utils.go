@@ -13,6 +13,7 @@ import (
 
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/middleware/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func GenRsaKey(bits int) error {
@@ -140,6 +141,19 @@ func RsaDecrypt(cipherText string) string {
 		panic(err)
 	}
 	return string(plainText)
+}
+
+// 生成哈希值
+func GeneratePassword(password string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+}
+
+// 校验密码是否匹配
+func ValidatePassword(password string, hashed []byte) (bool, error) {
+	if err := bcrypt.CompareHashAndPassword(hashed, []byte(password)); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // 生成nanoid

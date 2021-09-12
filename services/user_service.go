@@ -27,7 +27,7 @@ func (u *UserService) Register(password string, user models.User) error {
 		return errors.New("用户已存在，请勿重复注册！")
 	}
 
-	hashed, err := models.GeneratePassword(password)
+	hashed, err := utils.GeneratePassword(password)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func (u *UserService) GetUserByNameAndPassword(username, password string) (model
 
 	if user.Username == username {
 		hashed := user.Password
-		if ok, _ := models.ValidatePassword(password, []byte(hashed)); ok {
+		if ok, _ := utils.ValidatePassword(password, []byte(hashed)); ok {
 			return models.User{AccountId: user.AccountId}, true
 		}
 	}
