@@ -20,7 +20,7 @@ func InitRouter(app *iris.Application, db *gorm.DB) {
 	{
 		handler := handlers.NewUserHandler(userService)
 		user.Post("/register", handler.Register)
-		user.Post("/login", handler.Login)
+		user.Post("/signin", handler.Login)
 		user.Post("/delete", verifyMiddleware, handler.Delete)
 	}
 	// http://localhost/book
